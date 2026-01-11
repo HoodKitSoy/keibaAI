@@ -1,0 +1,24 @@
+numpy==2.2.2
+pandas==2.3.2
+matplotlib==3.10.6
+tqdm==4.67.1
+beautifulsoup4==4.13.5
+requests==2.32.5
+dill==0.4.0
+selenium==4.35.0
+scikit-learn==1.7.2
+lightgbm==4.6.0
+optuna==4.5.0
+jupyterlab==4.4.7
+ipywidgets==8.1.7
+webdriver-manager==4.0.2
+lxml==6.0.1
+xgboost==3.0.5
+mysql-connector-python==9.4.0
+pyarrow==21.0.0
+pyflakes==3.4.0
+
+# 強化学習（オプション - train_rl.py使用時に必要）
+# PyTorchはCUDA 13.0用にインストール:
+#   pip install torch torchvision --index-url https://download.pytorch.org/whl/cu130
+gymnasium==1.2.2
