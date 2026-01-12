@@ -23,7 +23,7 @@ from typing import Any, Dict, List, Optional
 import pandas as pd
 
 from modules.policies._bet_policy import BetPolicyCoverageBase
-from modules.policies._utils import iter_race_groups
+from modules.policies._utils import build_race_id_series, iter_race_groups
 
 
 class WIN5BasedMultiPolicy(BetPolicyCoverageBase):
@@ -83,6 +83,11 @@ class WIN5BasedMultiPolicy(BetPolicyCoverageBase):
             ※win5_selectionsが指定された場合、返り値もその順序を維持
         """
         bet_dict: Dict[str, Dict[str, List[int]]] = {}
+
+        # race_idがない場合は追加
+        if "race_id" not in score_table.columns:
+            score_table = score_table.copy()
+            score_table["race_id"] = build_race_id_series(score_table)
 
         # win5_selectionsが渡された場合はその順序でレースを処理
         if win5_selections:

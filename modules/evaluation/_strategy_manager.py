@@ -408,8 +408,10 @@ def prepare_strategies(
                 )
 
                 for threshold in win5_thresholds:
-                    sweep_policy_name = f"{policy_name}_th{threshold:.2f}"
-                    print(f"  閾値 {threshold:.2f} で実行中...")
+                    # 閾値を文字列化（小数点以下の0を削除してコンパクトに）
+                    th_str = f"{threshold:.3f}".rstrip("0").rstrip(".")
+                    sweep_policy_name = f"{policy_name}_th{th_str}"
+                    print(f"  閾値 {th_str} で実行中...")
 
                     # ポリシーの設定を取得
                     policy_info = policy_settings[policy_name]
