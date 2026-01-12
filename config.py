@@ -219,8 +219,6 @@ PREDICT_FILTER_UNSTARTED = _get_bool_env("PREDICT_FILTER_UNSTARTED", False)
 # --- WIN5予測設定 ---
 PREDICT_WIN5_ENABLED = _get_bool_env("PREDICT_WIN5_ENABLED", True)
 PREDICT_WIN5_THRESHOLD = _get_float_env("PREDICT_WIN5_THRESHOLD", 0.3)
-# WIN5Basedポリシー用の閾値（WIN5予測とは別）
-PREDICT_WIN5BASE_THRESHOLD = _get_float_env("PREDICT_WIN5BASE_THRESHOLD", 0.1)
 
 
 # =====================================

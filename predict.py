@@ -177,8 +177,8 @@ def _build_settings() -> SimpleNamespace:
         # WIN5（必須のため常にTrue）
         enable_win5=True,
         win5_threshold=config.PREDICT_WIN5_THRESHOLD,
-        # WIN5Basedポリシー用の閾値（WIN5予測とは別）
-        win5base_threshold=config.PREDICT_WIN5BASE_THRESHOLD,
+        # WIN5BasedポリシーもWIN5と同じ閾値を使用
+        win5base_threshold=config.PREDICT_WIN5_THRESHOLD,
         # 詳細出力
         verbose=config.PREDICT_VERBOSE,
         # 未発走レースフィルタリング

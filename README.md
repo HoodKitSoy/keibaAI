@@ -193,8 +193,7 @@ python predict.py
 | `PREDICT_TARGET_DATE` | 対象日（dateモード時） | 今日の日付 |
 | `PREDICT_TASKS` | 予測タスク | win,top3,rank |
 | `PREDICT_WIN5_ENABLED` | WIN5予測有効化 | true |
-| `PREDICT_WIN5_THRESHOLD` | WIN5組み合わせ生成用閾値 | 0.06 |
-| `PREDICT_WIN5BASE_THRESHOLD` | WIN5Basedポリシー用閾値 | 0.10 |
+| `PREDICT_WIN5_THRESHOLD` | WIN5組み合わせ生成用閾値（WIN5Basedポリシーも同値使用） | 0.06 |
 
 **出力先:**
 - `./predictions/{date}/` - 予測結果
@@ -259,7 +258,6 @@ TEST_WIN5_ENABLED=true
 PREDICT_TASKS=win,top3,rank
 PREDICT_WIN5_ENABLED=true
 PREDICT_WIN5_THRESHOLD=0.06
-PREDICT_WIN5BASE_THRESHOLD=0.10
 
 # [auto_predict.py] 自動予想設定
 AUTO_PREDICT_EMAIL_TO=your_email@example.com

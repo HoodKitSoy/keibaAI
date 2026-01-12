@@ -266,14 +266,7 @@ python predict.py
 | `PREDICT_TASKS` | 予測タスク | win,top3,rank |
 | `PREDICT_POLICIES` | 使用ポリシー | policy_config.jsonから読み込み |
 | `PREDICT_WIN5_ENABLED` | WIN5予測有効化 | true |
-| `PREDICT_WIN5_THRESHOLD` | WIN5組み合わせ生成用閾値 | 0.06 |
-| `PREDICT_WIN5BASE_THRESHOLD` | WIN5Basedポリシー用閾値 | 0.10 |
-
-**WIN5閾値の使い分け:**
-| 閾値 | 用途 | 推奨値 |
-|:---|:---|:---|
-| `PREDICT_WIN5_THRESHOLD` | WIN5対象5レースの組み合わせ生成 | 0.06（低め） |
-| `PREDICT_WIN5BASE_THRESHOLD` | WIN5Basedポリシーでの馬券購入判定 | 0.10（高め） |
+| `PREDICT_WIN5_THRESHOLD` | WIN5組み合わせ生成用閾値（WIN5Basedポリシーも同値使用） | 0.06 |
 
 **出力:**
 - `predictions/{date}/prediction_{task}.parquet` - 予測結果

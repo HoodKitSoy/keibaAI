@@ -88,8 +88,6 @@ USE_POLICY_CONFIG = (
 POLICY_CONFIG_PATH = os.getenv("AUTO_PREDICT_POLICY_CONFIG_PATH", "policy_config.json")
 WIN5_ENABLED = os.getenv("AUTO_PREDICT_WIN5_ENABLED", "true").lower() == "true"
 WIN5_THRESHOLD = float(os.getenv("AUTO_PREDICT_WIN5_THRESHOLD", "0.1"))
-# WIN5Basedポリシー用の閾値（WIN5予測とは別）
-WIN5BASE_THRESHOLD = float(os.getenv("AUTO_PREDICT_WIN5BASE_THRESHOLD", "0.1"))
 
 # 出力ディレクトリ（predict.pyと分離）
 AUTO_PREDICT_OUTPUT_DIR = os.getenv("AUTO_PREDICT_OUTPUT_DIR", "predictions_auto")
@@ -677,7 +675,6 @@ def run_prediction(target_date: str) -> Optional[Path]:
         env["PREDICT_POLICY_CONFIG_PATH"] = POLICY_CONFIG_PATH
         env["PREDICT_WIN5_ENABLED"] = "true" if WIN5_ENABLED else "false"
         env["PREDICT_WIN5_THRESHOLD"] = str(WIN5_THRESHOLD)
-        env["PREDICT_WIN5BASE_THRESHOLD"] = str(WIN5BASE_THRESHOLD)
         env["PREDICT_VERBOSE"] = "false"
 
         cmd = [sys.executable, "predict.py"]
