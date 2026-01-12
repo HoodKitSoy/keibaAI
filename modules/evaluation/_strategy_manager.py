@@ -57,7 +57,8 @@ def generate_win5_selections_for_threshold(
         if day_info is None:
             continue
 
-        races, winners, payout = day_info
+        # 4-tuple: races, winners, payout, tekichu_hyo
+        races, winners, payout, tekichu_hyo = day_info
 
         # 5レースそれぞれの候補馬を決定
         for race_key in races:

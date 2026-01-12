@@ -18,6 +18,7 @@ from ._result_saver import (
     save_comparison_by_bet_type,
     save_comparison_results,
     save_strategy_details,
+    save_win5_details,
     save_win5_results,
 )
 from ._strategy_manager import prepare_strategies, simulate_odds_table
@@ -42,6 +43,7 @@ __all__ = [
     "save_strategy_details",
     "save_comparison_results",
     "save_comparison_by_bet_type",
+    "save_win5_details",
     "save_win5_results",
     # 戦略マネージャー
     "prepare_strategies",

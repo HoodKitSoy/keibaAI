@@ -15,7 +15,8 @@ class Win5Processor:
 
     生成:
       - schedule: dict[date_key -> list[dict]]  各日の対象5レースの6列キー
-      - answer:   dict[date_key -> (winners: List[int], payout: int)]  勝ち馬番5つと払戻金
+      - answer:   dict[date_key -> (winners: List[int], payout: int, tekichu_hyo: int)]
+                  勝ち馬番5つと総払戻金、的中票数
     """
 
     DB_DIR = Path("./data/DB")
@@ -39,7 +40,8 @@ class Win5Processor:
     def __init__(self, db_dir: Optional[Path] = None) -> None:
         self.db_dir = Path(db_dir) if db_dir else self.DB_DIR
         self.schedule: Dict[str, List[Dict[str, str]]] = {}
-        self.answer: Dict[str, Tuple[List[int], int]] = {}
+        # answer: (winners, payout, tekichu_hyo) - 的中票数を追加
+        self.answer: Dict[str, Tuple[List[int], int, int]] = {}
         self._loaded = False
 
     def _find_first(self, candidates: List[str]) -> Optional[Path]:
@@ -90,18 +92,20 @@ class Win5Processor:
             schedule[date_key] = races
 
         # 正解と払戻の構築（Kumi: 10桁、各2桁の馬番×5）
-        answer: Dict[str, Tuple[List[int], int]] = {}
+        answer: Dict[str, Tuple[List[int], int, int]] = {}
         for _, row in body_df.iterrows():
             date_key = self._date_key(row.get("Year", "0"), row.get("MonthDay", "0"))
             kumi = str(row.get("Kumi", "")).strip()
             payout = int(str(row.get("PayJyushosiki", "0")).strip() or 0)
+            # 的中票数を取得（総どり計算用）
+            tekichu_hyo = int(str(row.get("TekichuHyo", "0")).strip() or 0)
             winners: List[int] = []
             if len(kumi) >= 10:
                 try:
                     winners = [int(kumi[i : i + 2]) for i in range(0, 10, 2)]
                 except ValueError:
                     winners = []
-            answer[date_key] = (winners, payout)
+            answer[date_key] = (winners, payout, tekichu_hyo)
 
         self.schedule = schedule
         self.answer = answer
@@ -116,12 +120,18 @@ class Win5Processor:
 
     def get_day_info(
         self, date_key: str
-    ) -> Optional[Tuple[List[Dict[str, str]], List[int], int]]:
+    ) -> Optional[Tuple[List[Dict[str, str]], List[int], int, int]]:
+        """
+        指定日のWIN5情報を取得
+
+        Returns:
+            Tuple[races, winners, payout, tekichu_hyo] or None
+        """
         if date_key not in self.schedule or date_key not in self.answer:
             return None
         races = self.schedule[date_key]
-        winners, payout = self.answer[date_key]
-        return races, winners, payout
+        winners, payout, tekichu_hyo = self.answer[date_key]
+        return races, winners, payout, tekichu_hyo
 
     def load_today(self, date_key: Optional[str] = None) -> bool:
         """

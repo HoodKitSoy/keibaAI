@@ -15,8 +15,8 @@ from modules.preprocessing._win5_processor import Win5Processor
 from modules.simulation import Simulator
 from modules.simulation._win5_tickets import Win5Tickets
 
-from ._output_manager import get_strategy_output_dir
-from ._result_saver import save_strategy_details
+from ._output_manager import get_output_dir, get_strategy_output_dir
+from ._result_saver import save_strategy_details, save_win5_details
 
 
 def evaluate_strategies(
@@ -163,7 +163,7 @@ def run_win5_simulation(
         return {"executed": False, "threshold": threshold}
 
     # 日ごとにシミュレーション
-    results = []
+    daily_results = []  # 詳細結果（save_win5_details用）
     total_bets = 0
     total_bet_amount = 0.0
     total_return = 0.0
@@ -174,7 +174,8 @@ def run_win5_simulation(
         if day_info is None:
             continue
 
-        races, winners, payout = day_info
+        # 新しい4-tupleフォーマット
+        races, winners, total_payout, tekichu_hyo = day_info
 
         # 5レースそれぞれの候補馬を決定
         candidates = []
@@ -211,46 +212,37 @@ def run_win5_simulation(
 
         # 5レース全てに候補がある場合のみ購入
         if all(len(c) > 0 for c in candidates):
-            n_bets, bet_amount, return_amount = win5_tickets.bet_win5(
-                date_key, candidates
-            )
-            hit = return_amount > 0
+            # 詳細結果を取得
+            result = win5_tickets.bet_win5_detailed(date_key, candidates)
+            daily_results.append(result)
 
-            results.append(
-                {
-                    "date": date_key,
-                    "n_bets": n_bets,
-                    "bet_amount": bet_amount,
-                    "return_amount": return_amount,
-                    "hit": hit,
-                    "winners": winners,
-                    "payout": payout,
-                    "candidates": candidates,
-                }
-            )
-
-            total_bets += n_bets
-            total_bet_amount += bet_amount
-            total_return += return_amount
-            if hit:
+            total_bets += result["n_bets"]
+            total_bet_amount += result["bet_amount"]
+            total_return += result["return_amount"]
+            if result["hit"]:
                 total_hits += 1
+
+    # 詳細結果を保存（ポリシーと同じ形式）
+    if daily_results:
+        output_dir = Path(get_output_dir(args))
+        save_win5_details(threshold, daily_results, output_dir, task="win")
 
     # 結果を返す
     return_rate = (total_return / total_bet_amount * 100) if total_bet_amount > 0 else 0
     print(
-        f"  実行日数: {len(results)}, 総点数: {total_bets}, "
-        f"総貭け金: {total_bet_amount:,.0f}円, 総払戻: {total_return:,.0f}円, "
+        f"  実行日数: {len(daily_results)}, 総点数: {total_bets}, "
+        f"総賭け金: {total_bet_amount:,.0f}円, 総払戻: {total_return:,.0f}円, "
         f"回収率: {return_rate:.2f}%, 的中: {total_hits}回"
     )
 
     return {
         "executed": True,
         "threshold": threshold,
-        "days": len(results),
+        "days": len(daily_results),
         "total_bets": total_bets,
         "total_bet_amount": total_bet_amount,
         "total_return": total_return,
         "return_rate": return_rate,
         "hits": total_hits,
-        "details": results,
+        "details": daily_results,
     }
