@@ -1,0 +1,37 @@
+{
+  "enabled_policies": [
+    "WIN5BasedMultiPolicy",
+    "OddsValueTieredPolicy"
+  ],
+  "disabled_policies": [
+    "BetPolicyCoverage25",
+    "BetPolicyCoverage50",
+    "BetPolicyCoverage75",
+    "HybridBetPolicy",
+    "ExpectedValueBetPolicy",
+    "TieredCoverageBetPolicy",
+    "OddsBasedExpectedValuePolicy",
+    "OddsRangeFilterPolicy",
+    "MultiOddsExpectedValuePolicy",
+    "WIN5BasedHedgePolicy",
+    "RaceSelectiveHybridPolicy",
+    "RaceSelectiveExpectedValueBetPolicy",
+    "RaceSelectiveTieredCoverageBetPolicy",
+    "RaceSelectiveCoverage25Policy",
+    "RaceSelectiveCoverage50Policy",
+    "RaceSelectiveCoverage75Policy",
+    "RLBetPolicy",
+    "RLWIN5Policy"
+  ],
+  "policy_settings": {
+    "RLBetPolicy": {
+      "model_dir": "models/rl",
+      "top_k": 3,
+      "bet_types": ["tansho", "fukusho", "umaren", "umatan", "wide", "sanrenpuku", "sanrentan"]
+    },
+    "RLWIN5Policy": {
+      "model_path": "models/rl/win5/best_model.pt",
+      "top_k": 3
+    }
+  }
+}

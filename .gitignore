@@ -180,3 +180,7 @@ bk/
 
 # 一時ファイル
 *.log
+
+# 設定ファイル
+policy_config.json
+predict_policy_config.json
