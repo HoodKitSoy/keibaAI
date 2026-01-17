@@ -35,6 +35,7 @@ JRA-DB前処理出力（Parquet/CSV）を読み込んで、以下の2段階で�
     RL_ENABLED: 強化学習の有効化（true/false）
     LGBM_SKIP: LightGBM学習をスキップ（true/false）
     RL_BET_TYPES: 強化学習の対象券種（カンマ区切り、空欄で全券種）
+    TRAIN_WIN5_RACES_ONLY: WIN5対象レースのみで学習（true/false）
 """
 
 from __future__ import annotations
@@ -44,9 +45,11 @@ from datetime import datetime
 from types import SimpleNamespace
 
 import numpy as np
+import pandas as pd
 
 import config
 from modules.core import load_preprocessed
+from modules.preprocessing._win5_processor import Win5Processor
 from modules.training import (
     get_effective_config,
     load_existing_predictions,
@@ -104,6 +107,8 @@ def _build_settings() -> SimpleNamespace:
         device=config.DEVICE if config.DEVICE else None,
         seed=config.SEED,
         verbose=config.TRAIN_VERBOSE,
+        # WIN5フィルタ
+        win5_races_only=config.TRAIN_WIN5_RACES_ONLY,
     )
 
 
@@ -174,6 +179,42 @@ def main() -> int:
             frac=settings.sample_frac, random_state=eff_config["seed"]
         )
         print(f"サンプル抽出: frac={settings.sample_frac} -> shape={df_raw.shape}")
+
+    # WIN5対象レースのみにフィルタリング
+    if settings.win5_races_only:
+        print("\n[WIN5フィルタリング]")
+        win5_processor = Win5Processor()
+        win5_processor.load()
+
+        if win5_processor.loaded:
+            print(f"WIN5データ読み込み完了: {len(win5_processor.get_dates())}日分")
+            original_count = len(df_raw)
+
+            # 各日付ごとにフィルタリング
+            if "Year" in df_raw.columns and "MonthDay" in df_raw.columns:
+                filtered_dfs = []
+                for (year, monthday), group_df in df_raw.groupby(["Year", "MonthDay"]):
+                    date_key = f"{str(year).zfill(4)}{str(monthday).zfill(4)}"
+                    filtered = win5_processor.filter_win5_races(group_df, date_key)
+                    if len(filtered) > 0:
+                        filtered_dfs.append(filtered)
+
+                if filtered_dfs:
+                    df_raw = pd.concat(filtered_dfs, ignore_index=True)
+                else:
+                    print("警告: WIN5対象レースが見つかりませんでした")
+                    return 1
+
+            filtered_count = len(df_raw)
+            print(
+                f"フィルタリング: {original_count} → {filtered_count} 行（WIN5対象のみ）"
+            )
+        else:
+            print("警告: WIN5データが読み込めませんでした")
+            print(
+                "TRAIN_WIN5_RACES_ONLY=false に設定するか、WIN5データを配置してください"
+            )
+            return 1
 
     # 年の分布確認
     if "Year" in df_raw.columns:

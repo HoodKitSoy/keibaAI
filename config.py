@@ -138,6 +138,11 @@ LGBM_SKIP = _get_bool_env("LGBM_SKIP", False)
 LGBM_PREDS_PATH = _get_str_env("LGBM_PREDS_PATH", "")
 TRAIN_VERBOSE = _get_bool_env("TRAIN_VERBOSE", False)
 
+# --- 学習データフィルタ設定 ---
+# TrueにするとWIN5対象レースのみで学習（デフォルト: False）
+TRAIN_WIN5_RACES_ONLY = _get_bool_env("TRAIN_WIN5_RACES_ONLY", False)
+
+
 # 後方互換用エイリアス
 MODEL_SAVE_DIR = TRAIN_OUTPUT_DIR
 NUM_BOOST_ROUND = LGBM_NUM_BOOST_ROUND
